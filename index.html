@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Haunted House Escape</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Raleway:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        color-scheme: dark;
+      }
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        overflow: hidden;
+        background: #05060a;
+        font-family: 'Raleway', sans-serif;
+      }
+      #game {
+        position: fixed;
+        inset: 0;
+      }
+      #ui-root {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+      .inventory-bar {
+        display: flex;
+        gap: 0.5rem;
+        padding: 0.75rem 1.25rem;
+        background: rgba(10, 12, 18, 0.7);
+        backdrop-filter: blur(6px);
+        pointer-events: auto;
+        align-items: center;
+        color: #f4f1e1;
+      }
+      .inventory-item {
+        border: 1px solid rgba(244, 241, 225, 0.4);
+        padding: 0.35rem 0.6rem;
+        border-radius: 0.5rem;
+        font-size: 0.85rem;
+        cursor: pointer;
+        background: rgba(66, 55, 44, 0.5);
+      }
+      .inventory-item.active {
+        outline: 2px solid #d4b76a;
+      }
+      .status-line {
+        font-size: 0.75rem;
+        opacity: 0.75;
+      }
+      .subtitle {
+        align-self: center;
+        pointer-events: none;
+        margin-bottom: 6vh;
+        padding: 0.75rem 1rem;
+        border-radius: 0.75rem;
+        background: rgba(15, 20, 32, 0.75);
+        color: #f5f2e6;
+        font-size: 1rem;
+        min-width: 320px;
+        text-align: center;
+      }
+      .subtitle.high-contrast {
+        background: #0f0f0f;
+        color: #ffffff;
+      }
+      .settings-panel {
+        pointer-events: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        padding: 0.75rem 1rem;
+        align-self: flex-end;
+        background: rgba(8, 10, 18, 0.65);
+        color: #f4f1e1;
+        max-width: 320px;
+      }
+      .settings-panel label {
+        display: flex;
+        justify-content: space-between;
+        gap: 0.5rem;
+        font-size: 0.85rem;
+      }
+      .toast {
+        pointer-events: none;
+        align-self: flex-start;
+        margin: 1rem;
+        padding: 0.5rem 0.75rem;
+        border-radius: 0.5rem;
+        background: rgba(10, 20, 30, 0.85);
+        color: #f5f0dd;
+        font-size: 0.85rem;
+        opacity: 0;
+        transform: translateY(-10px);
+        transition: opacity 0.3s ease, transform 0.3s ease;
+      }
+      .toast.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      .puzzle-modal {
+        position: fixed;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        background: rgba(2, 4, 10, 0.72);
+        pointer-events: auto;
+      }
+      .puzzle-card {
+        background: rgba(20, 22, 32, 0.92);
+        color: #f2e7c9;
+        padding: 1.5rem;
+        max-width: 420px;
+        border-radius: 1rem;
+        box-shadow: 0 20px 45px rgba(0, 0, 0, 0.45);
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+      .puzzle-card button {
+        pointer-events: auto;
+        padding: 0.5rem 0.75rem;
+        border-radius: 0.5rem;
+        border: none;
+        background: #2c3b58;
+        color: #f2e7c9;
+        font-size: 0.9rem;
+        cursor: pointer;
+      }
+      .puzzle-card button:hover,
+      .puzzle-card button:focus {
+        background: #3d5277;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="game"></div>
+    <div id="ui-root"></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

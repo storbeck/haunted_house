@@ -1,5 +1,52 @@
 import type { CSSProperties } from 'react';
 
+export const ITEMS = {
+  'winding-key': {
+    id: 'winding-key',
+    name: 'Brass Winding Key',
+    description:
+      'A weighty brass key etched with the Wraithmoor crest. It hums faintly when held near clockwork mechanisms.'
+  },
+  'cipher-disc': {
+    id: 'cipher-disc',
+    name: 'Cipher Disc',
+    description:
+      'Bone-white rings nest together with careful tolerances. Rotating the layers reveals a repeating pattern of moon phases.'
+  },
+  'amber-lantern': {
+    id: 'amber-lantern',
+    name: 'Amber Lantern',
+    description:
+      'A warded lantern whose glow refuses to sputter. The wick blooms warm amber light that repels the basement mist.'
+  },
+  'pressure-manual': {
+    id: 'pressure-manual',
+    name: 'Pressure Manual',
+    description:
+      'An oilskin-bound manual explaining how to bleed the manor’s steam network without triggering the safety shriek.'
+  },
+  'ashen-token': {
+    id: 'ashen-token',
+    name: 'Ashen Token',
+    description:
+      'A palm-sized token pressed from soot and bone meal. Its surface is embossed with the outline of a locked sigil.'
+  },
+  'basement-sigil': {
+    id: 'basement-sigil',
+    name: 'Sigil of Release',
+    description:
+      'A sigil engraved in quicksilver glass. It pulses with residual heat, promising the boiler will obey if properly invoked.'
+  }
+} as const;
+
+export type ItemId = keyof typeof ITEMS;
+export type ItemDefinition = (typeof ITEMS)[ItemId];
+
+export type HotspotReward = {
+  itemId: ItemId;
+  note?: string;
+};
+
 export type HotspotAction = 'examine' | 'travel';
 
 export type HotspotDefinition = {
@@ -10,6 +57,9 @@ export type HotspotDefinition = {
   optionalScare?: string;
   targetSceneId?: string;
   position: { x: number; y: number };
+  requiresItems?: ItemId[];
+  lockedDescription?: string;
+  rewards?: HotspotReward[];
 };
 
 export type SceneDefinition = {
@@ -80,6 +130,12 @@ export const SCENES: SceneDefinition[] = [
         action: 'examine',
         description:
           'Guest names are etched into tarnished brass plates. The final entry—left unfinished—scratches your surname before trailing into a gouge.',
+        rewards: [
+          {
+            itemId: 'winding-key',
+            note: 'A hidden drawer releases a warm brass winding key wrapped in velvet.'
+          }
+        ],
         position: { x: 30, y: 68 }
       },
       {
@@ -157,6 +213,93 @@ export const SCENES: SceneDefinition[] = [
         description: 'A glass door breathes with condensation, inviting you onward.',
         targetSceneId: 'conservatory',
         position: { x: 78, y: 64 }
+      },
+      {
+        id: 'portrait-to-library',
+        label: 'Library Door',
+        action: 'travel',
+        description: 'A gilded crank waits beside the oak door.',
+        requiresItems: ['winding-key'],
+        lockedDescription: 'The door refuses to budge; a recessed mechanism shaped like a winding key stares back at you.',
+        targetSceneId: 'library',
+        position: { x: 50, y: 62 }
+      }
+    ]
+  },
+  {
+    id: 'library',
+    name: 'Moonlit Library',
+    tagline: 'Shelves of cracked vellum lean inward as if eavesdropping on your heartbeat.',
+    ambient:
+      'Pages rustle though no breeze flows. Somewhere high above, a pendulum clock ticks out-of-time.',
+    background: {
+      default: `radial-gradient(circle at 70% 18%, rgba(92, 126, 177, 0.32), transparent 48%),
+        radial-gradient(circle at 22% 70%, rgba(177, 115, 58, 0.24), transparent 60%),
+        linear-gradient(180deg, #171923 0%, #131622 52%, #090b12 100%)`,
+      safe: `radial-gradient(circle at 72% 20%, rgba(116, 148, 198, 0.28), transparent 52%),
+        radial-gradient(circle at 24% 72%, rgba(200, 144, 90, 0.2), transparent 62%),
+        linear-gradient(180deg, #1a1d27 0%, #151826 54%, #0b0d14 100%)`
+    },
+    vignette:
+      'radial-gradient(circle at 50% 48%, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.18) 58%, rgba(3, 4, 8, 0.72) 100%)',
+    layers: [
+      {
+        id: 'moonbeam',
+        style: {
+          backgroundImage: `linear-gradient(122deg, rgba(164, 200, 255, 0.2) 12%, rgba(0, 0, 0, 0) 46%)`,
+          mixBlendMode: 'screen',
+          opacity: 0.55
+        }
+      },
+      {
+        id: 'dust',
+        style: {
+          backgroundImage: `radial-gradient(circle at 40% 60%, rgba(210, 210, 210, 0.12), transparent 60%)`,
+          opacity: 0.45
+        }
+      }
+    ],
+    hotspots: [
+      {
+        id: 'library-music-box',
+        label: 'Music Box',
+        action: 'examine',
+        description:
+          'A velvet-lined box sits on the reading table. Its cylinder is stalled mid-measure, teeth locked in anticipation.',
+        requiresItems: ['winding-key'],
+        lockedDescription: 'You need a key capable of turning the winding column before the melody will resume.',
+        rewards: [
+          {
+            itemId: 'cipher-disc',
+            note: 'The melody finishes and ejects a bone-white cipher disc from a hidden compartment.'
+          }
+        ],
+        position: { x: 46, y: 54 }
+      },
+      {
+        id: 'library-tome',
+        label: 'Ciphered Tome',
+        action: 'examine',
+        description:
+          'Letters shift on the page like ink caught in a tide. The cipher disc in your pack tingles, eager to align.',
+        optionalScare: 'The shelves exhale in unison, bowing toward you.',
+        position: { x: 62, y: 34 }
+      },
+      {
+        id: 'library-ladder',
+        label: 'Caged Ladder',
+        action: 'examine',
+        description:
+          'The ladder’s wheels are shackled. Scratched notes warn: “Do not roll north unless the boiler sleeps.”',
+        position: { x: 28, y: 68 }
+      },
+      {
+        id: 'library-to-portrait',
+        label: 'Return to Portrait Hall',
+        action: 'travel',
+        description: 'Slip through the door while the portraits avert their gaze.',
+        targetSceneId: 'portrait-hall',
+        position: { x: 82, y: 74 }
       }
     ]
   },
@@ -206,12 +349,18 @@ export const SCENES: SceneDefinition[] = [
         position: { x: 48, y: 54 }
       },
       {
-        id: 'conservatory-pipes',
-        label: 'Pressure Valve',
+        id: 'conservatory-lantern',
+        label: 'Ward Lantern',
         action: 'examine',
         description:
-          'Pressure gauges tremble near the red line. A whispered plea—either steam or spirit—asks you not to turn the wheel.',
-        position: { x: 68, y: 66 }
+          'A caretaker’s lantern hangs among the vines. The flame glows amber despite the lack of fuel.',
+        rewards: [
+          {
+            itemId: 'amber-lantern',
+            note: 'When lifted, the lantern brightens and pledges to chase shadows from the servant corridor.'
+          }
+        ],
+        position: { x: 62, y: 30 }
       },
       {
         id: 'conservatory-to-corridor',
@@ -269,6 +418,12 @@ export const SCENES: SceneDefinition[] = [
         action: 'examine',
         description:
           'Faint warmth bleeds through the panel gap. Scratched into the paint is a plea: “Do not feed the boiler.”',
+        rewards: [
+          {
+            itemId: 'pressure-manual',
+            note: 'You pry the panel loose and recover a sealed pressure manual wrapped in oilskin.'
+          }
+        ],
         position: { x: 42, y: 58 }
       },
       {
@@ -278,6 +433,16 @@ export const SCENES: SceneDefinition[] = [
         description: 'Descend the iron steps toward the boiler heart.',
         targetSceneId: 'boiler-room',
         position: { x: 74, y: 70 }
+      },
+      {
+        id: 'corridor-to-basement',
+        label: 'Basement Stairs',
+        action: 'travel',
+        description: 'Chains rattle from the darkness below, awaiting the lantern’s glow.',
+        requiresItems: ['amber-lantern'],
+        lockedDescription: 'Without a steadfast lantern, the darkness below seizes your breath and forces you back.',
+        targetSceneId: 'basement-stairs',
+        position: { x: 54, y: 74 }
       },
       {
         id: 'corridor-to-conservatory',
@@ -328,10 +493,18 @@ export const SCENES: SceneDefinition[] = [
       },
       {
         id: 'boiler-furnace',
-        label: 'Furnace Door',
+        label: 'Furnace Hatch',
         action: 'examine',
         description:
-          'Heat roars behind the hatch. When you peer into the gap, coals rearrange themselves into a breathing pattern.',
+          'Heat roars behind the hatch. The manual diagrams show a specific sequence to bleed the furnace safely.',
+        requiresItems: ['pressure-manual'],
+        lockedDescription: 'Your fingers blister as the hatch sears shut. A proper manual might reveal how to vent the heat first.',
+        rewards: [
+          {
+            itemId: 'ashen-token',
+            note: 'Following the manual’s steps, you scoop an ashen token from the cooled embers.'
+          }
+        ],
         position: { x: 46, y: 64 }
       },
       {
@@ -341,6 +514,66 @@ export const SCENES: SceneDefinition[] = [
         description: 'Climb back toward the servant corridor.',
         targetSceneId: 'servant-corridor',
         position: { x: 26, y: 78 }
+      }
+    ]
+  },
+  {
+    id: 'basement-stairs',
+    name: 'Basement Stairs',
+    tagline: 'Cold breath funnels upward as the manor waits for tribute.',
+    ambient:
+      'Water drips in irregular rhythms. Between drips you hear a distant choir humming a single, unwavering note.',
+    background: {
+      default: `radial-gradient(circle at 30% 30%, rgba(92, 120, 140, 0.26), transparent 52%),
+        radial-gradient(circle at 70% 70%, rgba(177, 58, 98, 0.28), transparent 58%),
+        linear-gradient(180deg, #0f1316 0%, #090b10 50%, #050507 100%)`,
+      safe: `radial-gradient(circle at 32% 32%, rgba(114, 144, 162, 0.22), transparent 56%),
+        radial-gradient(circle at 68% 72%, rgba(198, 90, 122, 0.24), transparent 60%),
+        linear-gradient(180deg, #12171a 0%, #0c0e12 52%, #060609 100%)`
+    },
+    vignette:
+      'radial-gradient(circle at 50% 46%, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.22) 60%, rgba(2, 3, 5, 0.82) 100%)',
+    layers: [
+      {
+        id: 'mist',
+        style: {
+          backgroundImage: `radial-gradient(circle at 48% 62%, rgba(208, 220, 230, 0.18), transparent 60%)`,
+          opacity: 0.55
+        }
+      }
+    ],
+    hotspots: [
+      {
+        id: 'basement-landing',
+        label: 'Landing Runes',
+        action: 'examine',
+        description:
+          'Runes carved into the stairs glow when the lantern sweeps across them. They outline a sigil missing its core.',
+        position: { x: 44, y: 48 }
+      },
+      {
+        id: 'basement-altar',
+        label: 'Ash Altar',
+        action: 'examine',
+        description:
+          'An altar of obsidian collects the manor’s breath. A recess at its center mirrors the shape of your ashen token.',
+        requiresItems: ['ashen-token'],
+        lockedDescription: 'The altar rejects your empty hands. Something forged in the furnace must complete the design.',
+        rewards: [
+          {
+            itemId: 'basement-sigil',
+            note: 'When you place the token, silver light etches a sigil of release into a glass disc.'
+          }
+        ],
+        position: { x: 58, y: 62 }
+      },
+      {
+        id: 'basement-to-corridor',
+        label: 'Back to Corridor',
+        action: 'travel',
+        description: 'Climb the stairs, lantern held high.',
+        targetSceneId: 'servant-corridor',
+        position: { x: 28, y: 74 }
       }
     ]
   }

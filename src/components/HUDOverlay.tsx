@@ -1,8 +1,8 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { useGameStore } from '../state/gameStore';
 import { useSettingsStore } from '../state/settingsStore';
-import { SCENE_MAP } from '../scenes/sceneData';
+import { ITEMS, SCENE_MAP } from '../scenes/sceneData';
 
 import styles from './HUDOverlay.module.css';
 
@@ -18,12 +18,26 @@ export function HUDOverlay() {
 
   const currentSceneId = useGameStore((state) => state.currentSceneId);
   const visitedSceneIds = useGameStore((state) => state.visitedSceneIds);
+  const inventory = useGameStore((state) => state.inventory);
+  const lastAcquiredItemId = useGameStore((state) => state.lastAcquiredItemId);
+  const clearLastAcquiredItem = useGameStore((state) => state.clearLastAcquiredItem);
 
   const currentScene = SCENE_MAP[currentSceneId];
   const visitedScenes = useMemo(
     () => visitedSceneIds.map((id) => SCENE_MAP[id]?.name ?? id),
     [visitedSceneIds]
   );
+  const inventoryItems = useMemo(() => inventory.map((itemId) => ITEMS[itemId]), [inventory]);
+
+  useEffect(() => {
+    if (!lastAcquiredItemId) return;
+
+    const timeoutId = window.setTimeout(() => {
+      clearLastAcquiredItem();
+    }, 3600);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [clearLastAcquiredItem, lastAcquiredItemId]);
 
   return (
     <div className={styles.wrapper} aria-live="polite">
@@ -48,7 +62,8 @@ export function HUDOverlay() {
       </header>
       <section className={styles.instructions}>
         <p>
-          Click the shimmering markers to investigate or travel. Use Tab to cycle hotspots and Enter or Space to interact.
+          Click the shimmering markers to investigate or travel. Items you recover unlock new paths—check the inventory panel
+          for clues. Use Tab to cycle hotspots and Enter or Space to interact.
         </p>
       </section>
       <section
@@ -74,6 +89,24 @@ export function HUDOverlay() {
           <span>Show Hotspot Labels</span>
         </label>
         <p className={styles.note}>Adjust these settings anytime—changes apply instantly.</p>
+      </section>
+      <section className={styles.inventory} aria-label="Inventory">
+        <h2>Inventory</h2>
+        {inventoryItems.length === 0 ? (
+          <p className={styles.empty}>No items recovered yet. Investigate glowing hotspots to uncover tools.</p>
+        ) : (
+          <ul>
+            {inventoryItems.map((item) => (
+              <li
+                key={item.id}
+                data-new={item.id === lastAcquiredItemId}
+              >
+                <strong>{item.name}</strong>
+                <span>{item.description}</span>
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
       <section className={styles.visited} aria-label="Visited rooms">
         <h2>Visited Rooms</h2>

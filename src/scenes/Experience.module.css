@@ -23,8 +23,11 @@
   background-position: center;
   box-shadow: 0 30px 80px rgba(0, 0, 0, 0.65);
   border: 1px solid rgba(90, 94, 112, 0.35);
-  animation: sceneEnter 450ms ease;
   transition: transform 420ms ease, box-shadow 420ms ease;
+}
+
+.sceneEntering {
+  animation: sceneEnter 420ms ease;
 }
 
 .scene::after {
@@ -133,6 +136,22 @@
   border-color: rgba(255, 214, 170, 0.8);
 }
 
+.hotspot[data-resolved='true'] .marker {
+  background: radial-gradient(circle at center, rgba(118, 140, 148, 0.55), rgba(118, 140, 148, 0) 70%);
+}
+
+.hotspot[data-resolved='true'] .marker::after {
+  border-color: rgba(118, 140, 148, 0.4);
+}
+
+.hotspot[data-locked='true'] .marker {
+  background: radial-gradient(circle at center, rgba(177, 58, 58, 0.58), rgba(177, 58, 58, 0) 70%);
+}
+
+.hotspot[data-locked='true'] .marker::after {
+  border-color: rgba(177, 58, 58, 0.5);
+}
+
 .hintsHidden .hotspotLabel {
   opacity: 0;
   transform: translateY(-8px);
@@ -222,6 +241,11 @@
   border: 1px solid rgba(177, 58, 58, 0.48);
 }
 
+.promptChip[data-locked='true'] {
+  background: rgba(177, 58, 58, 0.3);
+  border-color: rgba(255, 130, 130, 0.7);
+}
+
 .promptHeader h3 {
   font-size: 1.1rem;
   letter-spacing: 0.08em;
@@ -232,6 +256,40 @@
   font-size: 0.95rem;
   line-height: 1.5;
   color: rgba(235, 236, 244, 0.92);
+}
+
+.promptRewards {
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.promptRewards li {
+  display: grid;
+  gap: 0.25rem;
+  padding: 0.75rem 1rem;
+  border-radius: 14px;
+  background: rgba(20, 22, 30, 0.7);
+  border: 1px solid rgba(118, 124, 142, 0.45);
+}
+
+.promptRewards li[data-celebrate='true'] {
+  background: rgba(34, 18, 10, 0.8);
+  border-color: rgba(255, 214, 170, 0.8);
+  box-shadow: 0 12px 32px rgba(255, 198, 134, 0.25);
+}
+
+.promptRewards li strong {
+  font-size: 0.8rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.promptRewards li span {
+  font-size: 0.85rem;
+  color: rgba(230, 230, 238, 0.9);
 }
 
 .promptAside {
@@ -300,6 +358,23 @@
   to {
     opacity: 1;
     transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scene,
+  .sceneEntering,
+  .marker,
+  .marker::after,
+  .prompt,
+  .promptVisible {
+    animation-duration: 1ms !important;
+    transition-duration: 1ms !important;
+  }
+
+  .marker,
+  .marker::after {
+    animation: none;
   }
 }
 
